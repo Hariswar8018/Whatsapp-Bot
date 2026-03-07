@@ -93,7 +93,6 @@ Choose Action:
             {"id": "students", "title": "Students"},
             {"id": "attendance", "title": "Attendance"},
             {"id": "fees", "title": "Fees"},
-            {"id": "reports", "title": "Reports"}
         ]
     }
 

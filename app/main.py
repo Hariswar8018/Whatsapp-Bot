@@ -24,11 +24,16 @@ async def webhook(request: Request):
         message = payload["data"]["data"]["value"]["messages"][0]
 
         phone = message["from"]
-        text = message["text"]["body"].lower()
+        if not phone.startswith("+"):
+            phone = "+" + phone
+
+        if message["type"] == "text":
+            text = message["text"]["body"].lower()
+        else:
+            text = ""
 
         if text == "start":
             await send_welcome_template(phone)
-
         else:
             await send_text(phone, "Type *start* to begin.")
 
@@ -78,8 +83,10 @@ async def send_text(phone, text):
     }
 
     async with httpx.AsyncClient() as client:
-        await client.post(
+        response = await client.post(
             f"{BASE_URL}/api/send",
             json=payload,
             headers=headers
         )
+
+    print("Text response:", response.text)

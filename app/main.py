@@ -61,11 +61,35 @@ async def webhook(request: Request):
             await handle_principal(phone)
         elif user_input == "students":
             await handle_students(phone)
+        elif user_input == "other":
+            await handle_other_menu(phone)
 
     except Exception as e:
         print("Parsing error:", e)
 
     return {"status": "ok"}
+
+async def handle_other_menu(phone):
+
+    message = "Choose additional action:"
+
+    payload = {
+        "phone": phone,
+        "message": message,
+        "buttons": [
+            {"id": "announcement", "title": "Announcement"},
+            {"id": "idcard", "title": "IDCard"},
+            {"id": "start", "title": "Start"},
+        ]
+    }
+
+    headers = {
+        "Authorization": f"Bearer {TOKEN}",
+        "Content-Type": "application/json"
+    }
+
+    async with httpx.AsyncClient() as client:
+        await client.post(f"{BASE_URL}/api/send", json=payload, headers=headers)
 
 async def handle_principal(phone):
 
@@ -102,7 +126,7 @@ Choose Action:
         "buttons": [
             {"id": "students", "title": "Students"},
             {"id": "attendance", "title": "Attendance"},
-            {"id": "fees", "title": "Fees"},
+            {"id": "other", "title": "Other"},
         ]
     }
 
@@ -145,7 +169,6 @@ async def handle_students(phone):
     students_ref = db.collection("School").document(school_id).collection("Students")
 
     result = students_ref.count().get()
-
-    count = result[0].value
+    count = result[0][0].value
 
     await send_text(phone, f"📊 Total Students: {count}")

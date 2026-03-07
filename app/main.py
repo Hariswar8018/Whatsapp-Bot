@@ -37,7 +37,7 @@ async def webhook(request: Request):
         if msg_type == "text":
             text = message["text"]["body"].lower()
 
-            if text == "start":
+            if text == "start" or text == "Hi" or text == "Hello" or text == "hello" or text == "hi":
                 await send_welcome_template(phone)
 
         # BUTTON CLICK
